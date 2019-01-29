@@ -1,0 +1,303 @@
+/** very basic SCSS file, can be used _U_niversally
+* written by Yao.Zheng . MIT license.
+*
+**/
+
+// npm install autoprefixer
+// vscode install autoprefixer
+// USE CTRL + Shift + C before saving
+
+//loading:
+//https://loading.io/css/
+
+@import "./../node_modules/sass-autoprefixer/scss/prefixes.scss";
+//comment out above
+
+$pre-version: "18.12.2";
+$version: "19.1.28";
+// color-selector : http://c0bra.github.io/color-scheme-js/
+
+$u: (
+  scale: ll lm ls ml mm ms sl sm ss,
+  media: (
+    ll: 1921px,
+    lm: 1600px,
+    ls: 1441px,
+    ml: 1200px,
+    mm: 1024px,
+    ms: 800px,
+    sl: 768px,
+    sm: 640px,
+    ss: 480px
+  ),
+  font-upper-limit: 6,
+  font-lower-limit: 4
+);
+@function if($bool, $return1, $return2) {
+  @if ($bool) {
+    @return $return1;
+  }
+  @return $return2;
+}
+@function get($arr, $key: null) {
+  @if ($key == null) {
+    @return map-get($u, $arr);
+  }
+  @if (type-of($key) == number) {
+    @return nth($arr, $key + 1);
+  }
+  @return map-get($arr, $key);
+}
+@function merge($val1, $val2) {
+  @if (type-of($val1) == List) {
+    @return join($val1, $val2);
+  }
+  @return map-merge($val1, $val2);
+}
+@function delete($map, $keys...) {
+  @each $key in $keys {
+    $map: map-remove($map, $key);
+  }
+  @return $map;
+}
+@function setU($mapOrKey, $val: null) {
+  @if ($val == null) {
+    $u: map-merge($u, $mapOrKey) !global;
+  } @else {
+    $u: map-merge(
+      $u,
+      (
+        $mapOrKey: $val
+      )
+    ) !global;
+  }
+  @return $u;
+}
+@function toString($val) {
+  @return quote($val);
+}
+@function isFloat($num) {
+  @return str-index(quote($num), ".") != null;
+}
+@function len($data) {
+  @if (type-of($data) == number) {
+    @return str-length(quote($data));
+  }
+  @if (type-of($data) == list) {
+    @return length($data);
+  }
+  @if (type-of($data) == map) {
+    @return length(map-keys($data));
+  }
+  @return 0;
+}
+@function colorChange($color, $amount, $power-2: 0) {
+  @if ($amount >= 0) {
+    @if ($power-2 == 0) {
+      @return tint($color, $amount);
+    } @else if($power-2 == 1) {
+      @return saturate($color, $amount);
+    }
+    @return lighten($color, $amount);
+  }
+  @if ($power-2 == 0) {
+    @return shade($color, abs($amount));
+  } @else if($power-2 == 1) {
+    @return desaturate($color, abs($amount));
+  }
+  @return darken($color, abs($amount));
+}
+// mixin -- use @include
+@mixin map($mapOrKey, $value: null) {
+  @if ($mapOrKey != null) {
+    @if ($value == null) {
+      @each $key, $val in $mapOrKey {
+        #{$key}: $val;
+      }
+    } @else {
+      #{$mapOrKey}: $value;
+    }
+  }
+}
+@mixin media($maxWidth: "", $minWidth: null) {
+  @if ($maxWith != "" and $minWidth != null) {
+    @if (type-of($maxWidth) != number) {
+      $maxWidth: get(get($u, "media"), $maxWidth);
+    }
+    @if (type-of($minWidth) != number) {
+      $minWidth: get(get($u, "media"), $minWidth);
+    }
+    @media (max-width: $maxWidth) and (min-width: $minWidth) {
+      @content;
+    }
+  } @else if($maxWidth != "") {
+    @if (type-of($maxWidth) != number) {
+      $maxWidth: get(get($u, "media"), $maxWidth);
+    }
+    @media (max-width: $maxWidth) {
+      @content;
+    }
+  } @else {
+    @if (type-of($minWidth) != number) {
+      $minWidth: get(get($u, "media"), $minWidth);
+    }
+    @media (min-width: $minWidth) {
+      @content;
+    }
+  }
+}
+@mixin fontSize($min: 14, $max: 26) {
+  @if (str-index($min, "f") != null) {
+    $min: unquote(str-slice($min, 2));
+    $maxer: get("font-upper-limit");
+    $miner: get("font-lower-limit");
+    font-size: calc(
+      (12 - #{$min}) *
+        #{$miner} *
+        1px +
+        ((12 - #{$min}) * #{$maxer} - (12 - #{$min}) * #{$miner}) *
+        (100vw - 300px) /
+        (1600 - 300)
+    );
+  } @else {
+    font-size: calc(
+      #{$min} * 1px + (#{$max} - #{$min}) * (100vw - 300px) / (1600 - 300)
+    );
+  }
+}
+@mixin justify-content($type: "flex-start") {
+  @if ($type == "flex-start") {
+    -webkit-box-pack: start;
+    -ms-flex-pack: start;
+    justify-content: flex-start;
+  }
+  @if ($type == "flex-end") {
+    -webkit-box-pack: end;
+    -ms-flex-pack: end;
+    justify-content: flex-end;
+  }
+  @if ($type == "center") {
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+  }
+  @if ($type == "space-between") {
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+  }
+  @if ($type == "space-around") {
+    -ms-flex-pack: distribute;
+    justify-content: space-around;
+  }
+}
+@mixin flex-direction($type: "row") {
+  @if ($type == "row") {
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: row;
+    flex-direction: row;
+  }
+  @if ($type == "row-reverse") {
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: reverse;
+    -ms-flex-direction: row-reverse;
+    flex-direction: row-reverse;
+  }
+  @if ($type == "column") {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+  }
+  @if ($type == "column-reverse") {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: reverse;
+    -ms-flex-direction: column-reverse;
+    flex-direction: column-reverse;
+  }
+}
+@mixin align-items($type: "flex-start") {
+  @if ($type == "flex-start") {
+    -webkit-box-align: start;
+    -ms-flex-align: start;
+    align-items: flex-start;
+  }
+  @if ($type == "flex-end") {
+    -webkit-box-align: end;
+    -ms-flex-align: end;
+    align-items: flex-end;
+  }
+  @if ($type == "center") {
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+  }
+  @if ($type == "stretch") {
+    -webkit-box-align: stretch;
+    -ms-flex-align: stretch;
+    align-items: stretch;
+  }
+  @if ($type == "baseline") {
+    -webkit-box-align: baseline;
+    -ms-flex-align: baseline;
+    align-items: baseline;
+  }
+}
+@mixin align-content($type: "flex-start") {
+  @if ($type == "flex-start") {
+    -ms-flex-line-pack: start;
+    align-content: flex-start;
+  }
+  @if ($type == "flex-end") {
+    -ms-flex-line-pack: end;
+    align-content: flex-end;
+  }
+  @if ($type == "center") {
+    -ms-flex-line-pack: center;
+    align-content: center;
+  }
+  @if ($type == "stretch") {
+    -ms-flex-line-pack: stretch;
+    align-content: stretch;
+  }
+  @if ($type == "space-between") {
+    -ms-flex-line-pack: justify;
+    align-content: space-between;
+  }
+  @if ($type == "space-around") {
+    -ms-flex-line-pack: distribute;
+    align-content: space-around;
+  }
+}
+@mixin u-straight {
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  white-space: nowrap;
+}
+@mixin u-100 {
+  width: 100%;
+  height: 100%;
+}
+@mixin u-round($radius: 0.25em) {
+  border-radius: #{$radius};
+}
+// final settings
+@mixin u-setting {
+  @for $i from 1 through 12 {
+    .u-font-#{$i} {
+      @include fontSize(f + $i);
+    }
+  }
+  .u-straight {
+    @include u-straight;
+  }
+  .u-100 {
+    @include u-100;
+  }
+  .u-round {
+    @include u-round;
+  }
+}
+// final include
+@include u-setting;

@@ -1,5 +1,9 @@
 @import "./universe.scss";
 .u-theme-dark {
+  .udc-1 {
+    // user-defined-color
+    color: pink;
+  }
   h1 {
     color: yellow;
   }

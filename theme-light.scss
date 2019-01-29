@@ -1,5 +1,9 @@
 @import "./universe.scss";
 .u-theme-light {
+  .udc-1 {
+    // user-defined-color
+    color: cyan;
+  }
   h1 {
     color: green;
   }

@@ -7,15 +7,11 @@
 // vscode install autoprefixer
 // USE CTRL + Shift + C before saving
 
-//loading:
-//https://loading.io/css/
-
 @import "./../node_modules/sass-autoprefixer/scss/prefixes.scss";
 //comment out above
 
 $pre-version: "18.12.2";
 $version: "19.1.28";
-// color-selector : http://c0bra.github.io/color-scheme-js/
 
 $u: (
   scale: ll lm ls ml mm ms sl sm ss,

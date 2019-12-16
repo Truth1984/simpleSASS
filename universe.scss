@@ -6,8 +6,9 @@
 // npm install autoprefixer
 // vscode install autoprefixer
 // USE CTRL + Shift + C before saving
+// option + C
 
-@import "./../../node_modules/sass-autoprefixer/scss/prefixes.scss";
+@import "./../node_modules/sass-autoprefixer/scss/prefixes.scss";
 //comment out above
 
 $pre-version: "18.12.2";
@@ -116,7 +117,7 @@ $u: (
   }
 }
 @mixin media($maxWidth: "", $minWidth: null) {
-  @if ($maxWith != "" and $minWidth != null) {
+  @if ($maxWidth != "" and $minWidth != null) {
     @if (type-of($maxWidth) != number) {
       $maxWidth: get(get($u, "media"), $maxWidth);
     }
@@ -143,7 +144,7 @@ $u: (
   }
 }
 @mixin fontSize($min: 14, $max: 26) {
-  @if (str-index($min, "f") != null) {
+  @if (str-index(toString($min), "f") != null) {
     $min: unquote(str-slice($min, 2));
     $maxer: get("font-upper-limit");
     $miner: get("font-lower-limit");
@@ -156,9 +157,7 @@ $u: (
         (1600 - 300)
     );
   } @else {
-    font-size: calc(
-      #{$min} * 1px + (#{$max} - #{$min}) * (100vw - 300px) / (1600 - 300)
-    );
+    font-size: calc(#{$min} * 1px + (#{$max} - #{$min}) * (100vw - 300px) / (1600 - 300));
   }
 }
 @mixin justify-content($type: "flex-start") {
